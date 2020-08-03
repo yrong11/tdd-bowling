@@ -10,8 +10,20 @@ public class BowlingGame {
     static int TENROUND = 10;
     String[] roundScores;
 
-    public BowlingGame(String[] roundScores) {
+    public BowlingGame(String[] roundScores) throws Exception {
+        if (!checkRoundScores(roundScores))
+            throw new Exception("parameter error!");
         this.roundScores = roundScores;
+    }
+
+    public boolean checkRoundScores(String[] roundScores){
+        if (roundScores.length > 11 || roundScores.length < 10)
+            return false;
+        for (String score : roundScores){
+            if (score.length() < 1 || score.length() > 2||!score.matches("[0-9X/]+"))
+                return false;
+        }
+        return true;
     }
 
     public int getScoreFromTime(char sign){
@@ -29,7 +41,7 @@ public class BowlingGame {
     public int getEachRoundRealSocre(int nowRound){
         String nowRoundScore = this.roundScores[nowRound - 1];
         if (isStrike(nowRoundScore) || isSpare(nowRoundScore))
-            return getScoreFromRound(nowRoundScore) + getNextTimeScore(this.roundScores, nowRound, isStrike(nowRoundScore));
+            return getScoreFromRound(nowRoundScore) + getNextTimeScore(nowRound, isStrike(nowRoundScore));
 
         return getScoreFromRound(nowRoundScore);
     }
@@ -42,9 +54,9 @@ public class BowlingGame {
         return totalScore ;
 
     }
-    public int getNextTimeScore(String[] roundScores, int nowRound, boolean twoNext){
-        String nextRoundScores = roundScores[nowRound];
-        String twoNextRoundScores = roundScores[nowRound + (nowRound== TENROUND ?0:1)];
+    public int getNextTimeScore(int nowRound, boolean twoNext){
+        String nextRoundScores = this.roundScores[nowRound];
+        String twoNextRoundScores = this.roundScores[nowRound + (nowRound== TENROUND ?0:1)];
         if (!twoNext)
             return getScoreFromTime(nextRoundScores.charAt(FIRSTTIME));
         if (isStrike(nextRoundScores))
